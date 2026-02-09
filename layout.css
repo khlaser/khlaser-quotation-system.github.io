@@ -1,0 +1,116 @@
+/* ==================== 布局与通用样式 ====================
+.layout-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.layout-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.layout-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .layout-row {
+        flex-direction: column;
+    }
+    .btn {
+        padding: 10px 18px;
+    }
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 2px solid var(--gray-200);
+    margin-bottom: 1.5rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.logo i {
+    font-size: 2rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.history-panel-btn {
+    background: none;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.history-panel-btn:hover {
+    background-color: var(--gray-100);
+}
+
+.settings-btn {
+    background: none;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.settings-btn:hover {
+    background-color: var(--gray-100);
+}
+
+.main-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 20px;
+    min-height: 600px;
+}
+
+@media (max-width: 1024px) {
+    .main-layout {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+}
+
+.content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 20px;
+    border-top: 1px solid var(--gray-200);
+    color: var(--gray-700);
+    font-size: 0.85rem;
+    background: white;
+}

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KH Laser 报价系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/reset.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- 加载中遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- 历史记录面板遮罩 -->
+    <div class="history-panel-overlay" id="historyPanelOverlay"></div>
+    
+    <!-- 历史记录浮动面板 -->
+    <div class="history-panel" id="historyPanel">
+        <div class="history-panel-header">
+            <h2 class="history-panel-title">
+                <i class="fas fa-history"></i>
+                历史报价记录
+            </h2>
+            <button class="close-history-panel" id="closeHistoryPanel">&times;</button>
+        </div>
+        
+        <div class="history-panel-content">
+            <!-- 历史记录操作按钮 -->
+            <div class="history-actions">
+                <button class="btn btn-secondary btn-sm" id="clearHistoryBtn">
+                    <i class="fas fa-trash"></i>
+                    清除历史
+                </button>
+            </div>
+            
+            <div id="historyList" class="history-list">
+                <div class="empty-state">
+                    <i class="fas fa-clock"></i>
+                    <p>暂无历史报价记录</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-wrapper">
+        <div class="container">
+            <header>
+                <div class="logo">
+                    <i class="fas fa-laser"></i>
+                    <span>KH Laser 报价系统</span>
+                </div>
+                <div class="header-actions">
+                    <button class="history-panel-btn" id="openHistoryPanel">
+                        <i class="fas fa-history"></i>
+                        <span>历史记录</span>
+                    </button>
+                    <button class="settings-btn" id="openSettings">
+                        <i class="fas fa-cog"></i>
+                        <span>系统设置</span>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="main-layout">
+                <div class="left-column">
+                    <!-- 产品配置 -->
+                    <div class="card">
+                        <!-- 汇率和价格来源在同一行 -->
+                        <div class="rate-price-row">
+                            <div class="rate-card">
+                                <h2 class="card-title">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    汇率设置 (1 USD = ? CNY)
+                                </h2>
+                                <div class="form-group">
+                                    <input type="number" id="exchangeRate" step="0.01" min="0" value="6.5">
+                                </div>
+                            </div>
+                            
+                            <div class="price-source-card">
+                                <h2 class="card-title">
+                                    <i class="fas fa-tags"></i>
+                                    价格来源
+                                </h2>
+                                <div class="price-source">
+                                    <div class="price-source-option active" data-source="tier1">阶梯一</div>
+                                    <div class="price-source-option" data-source="tier2">阶梯二</div>
+                                    <div class="price-source-option" data-source="tier3">阶梯三</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h2 class="card-title">
+                            <i class="fas fa-cogs"></i>
+                            产品配置
+                        </h2>
+                        
+                        <!-- 机器选择 -->
+                        <div class="form-group">
+                            <label>机器选择</label>
+                            <div class="series-selection-row">
+                                <div>
+                                    <label>系列</label>
+                                    <select id="seriesSelect">
+                                        <option value="">请选择系列</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>型号</label>
+                                    <select id="modelSelect" disabled>
+                                        <option value="">请先选择系列</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>功率</label>
+                                    <select id="powerSelect" disabled>
+                                        <option value="">请先选择型号</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- 机器信息显示 -->
+                            <div id="machineInfoDisplay" class="machine-info-card" style="display: none;">
+                                <div class="machine-info-title">
+                                    <i class="fas fa-info-circle"></i> 机器信息
+                                </div>
+                                <div class="machine-info-grid">
+                                    <div class="machine-info-item">
+                                        <div class="machine-info-label">打包尺寸 (cm)</div>
+                                        <div class="machine-info-value" id="packingSize">-</div>
+                                    </div>
+                                    <div class="machine-info-item">
+                                        <div class="machine-info-label">CBM</div>
+                                        <div class="machine-info-value" id="cbmValue">-</div>
+                                    </div>
+                                    <div class="machine-info-item">
+                                        <div class="machine-info-label">体积重 (kg)</div>
+                                        <div class="machine-info-value" id="volumeWeight">-</div>
+                                    </div>
+                                    <div class="machine-info-item">
+                                        <div class="machine-info-label">实重 (kg)</div>
+                                        <div class="machine-info-value" id="actualWeight">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 产品选择（水冷机和配件并排） -->
+                        <div class="product-selection-grid">
+                            <!-- 水冷机选择 -->
+                            <div class="form-group">
+                                <label>水冷机选择</label>
+                                <div class="radio-group" id="waterCoolerOptions">
+                                    <!-- 选项将通过JS动态生成 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 配件选择 -->
+                            <div class="form-group">
+                                <label>配件选择</label>
+                                <div class="checkbox-group" id="accessoryOptions">
+                                    <!-- 选项将通过JS动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 其他配件折叠框 -->
+                        <div class="form-group">
+                            <div class="collapse-header" id="otherAccessoriesToggle">
+                                <span>其他配件</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="collapse-content" id="otherAccessoriesContent">
+                                <!-- 搜索框 -->
+                                <div class="other-accessories-search">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" id="otherAccessoriesSearch" placeholder="搜索配件名称..." autocomplete="off">
+                                    <button class="clear-search" id="clearSearchBtn" title="清空搜索">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- 其他配件选项 -->
+                                <div class="checkbox-group" id="otherAccessoryOptions">
+                                    <!-- 选项将通过JS动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="right-column">
+                    <!-- 数量与费用设置（移动到原历史记录位置） -->
+                    <div class="quantity-fees-card">
+                        <h2 class="card-title">
+                            <i class="fas fa-calculator"></i>
+                            数量与费用设置
+                        </h2>
+                        
+                        <div class="quantity-fees-grid">
+                            <div class="quantity-fees-group">
+                                <label for="quantity" style="margin-bottom: 6px; font-weight: 500; font-size: 0.92rem;">数量</label>
+                                <input type="number" id="quantity" min="1" value="1" style="width: 100%;">
+                            </div>
+                            
+                            <div class="quantity-fees-group">
+                                <label for="internationalShipping" style="margin-bottom: 6px; font-weight: 500; font-size: 0.92rem;">国际运费 (CNY)</label>
+                                <input type="number" id="internationalShipping" step="0.01" min="0" value="0" style="width: 100%;">
+                            </div>
+                            
+                            <div class="quantity-fees-group">
+                                <label for="domesticShipping" style="margin-bottom: 6px; font-weight: 500; font-size: 0.92rem;">国内运费 (CNY)</label>
+                                <input type="number" id="domesticShipping" step="0.01" min="0" value="0" style="width: 100%;">
+                            </div>
+                            
+                            <div class="quantity-fees-group">
+                                <label for="otherFees" style="margin-bottom: 6px; font-weight: 500; font-size: 0.92rem;">其他费用 (CNY)</label>
+                                <input type="number" id="otherFees" step="0.01" min="0" value="0" style="width: 100%;">
+                            </div>
+                            
+                            <div class="quantity-fees-group">
+                                <label for="country" style="margin-bottom: 6px; font-weight: 500; font-size: 0.92rem;">国家</label>
+                                <select id="country" style="width: 100%;">
+                                    <option value="US">美国</option>
+                                    <option value="CN">中国</option>
+                                    <option value="DE">德国</option>
+                                    <option value="JP">日本</option>
+                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                            
+                            <div class="quantity-fees-group">
+                                <label for="zipCode" style="margin-bottom: 6px; font-weight: 500; font-size: 0.92rem;">邮编</label>
+                                <input type="text" id="zipCode" placeholder="请输入邮编" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 最终报价 -->
+                    <div class="card">
+                        <h2 class="card-title">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            最终报价
+                        </h2>
+                        
+                        <div class="quote-result">
+                            <div class="price-grid">
+                                <div class="price-column">
+                                    <div class="price-label">人民币报价 (CNY)</div>
+                                    <div class="cny-price" id="cnyPrice">¥0.00</div>
+                                </div>
+                                <div class="price-column">
+                                    <div class="price-label">美元报价 (USD)</div>
+                                    <div class="usd-price" id="usdPrice">$0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 费用明细展示 -->
+                        <div class="price-details-container">
+                            <!-- 费用明细将通过JS动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 KH Laser 报价系统. 保留所有权利.</p>
+        </footer>
+    </div>
+    
+    <!-- JavaScript 文件引用 -->
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
